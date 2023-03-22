@@ -5,6 +5,22 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:layout_editor_absoluteX="16dp">
+
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/topAppBar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            app:title="Log In"
+            app:navigationIcon="@drawable/ic_baseline_arrow_back_24"
+
+            />
+
+    </com.google.android.material.appbar.AppBarLayout>
     <EditText
         android:id="@+id/username"
         android:layout_width="0dp"
