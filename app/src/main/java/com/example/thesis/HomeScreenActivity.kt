@@ -1,7 +1,12 @@
 package com.example.thesis
 
+
+import android.content.ContentValues.TAG
+import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
+import android.util.Log
+
 import androidx.appcompat.app.AppCompatActivity
 import com.example.thesis.databinding.ActivityHomeScreenBinding
 import com.github.mikephil.charting.animation.Easing
@@ -11,11 +16,18 @@ import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.utils.ColorTemplate
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.ktx.Firebase
+import com.google.firebase.database.ktx.database
+import com.google.firebase.database.ValueEventListener
+import com.google.firebase.database.ktx.getValue
 
 
 class HomeScreenActivity : AppCompatActivity() {
 
-    private lateinit var binding : ActivityHomeScreenBinding
+    private lateinit var binding: ActivityHomeScreenBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -24,78 +36,106 @@ class HomeScreenActivity : AppCompatActivity() {
         val view = binding.root
         setContentView(view)
 
-        saveWaterQualityData()
-        retrieveRecordsAndPopulateCharts()
+        readAndWrite();
 
+//        binding.userName.text = "Hi, " + Firebase.auth.currentUser?.email
+
+        binding.signOut.setOnClickListener {
+            Firebase.auth.signOut()
+            val intent = Intent(this, SignInActivity::class.java)
+            startActivity(intent)
+        }
     }
 
-        fun saveWaterQualityData () {
-            val databaseHandler : WaterQualityDatabaseHandler = WaterQualityDatabaseHandler(this)
-            val record1 = databaseHandler.addWaterQualityData(WaterQualityDataModel(
-                1, 6.7, 32.0, 3.2))
-            val record2 = databaseHandler.addWaterQualityData(WaterQualityDataModel(
-                2, 7.8, 33.5, 4.5))
-            val record3 = databaseHandler.addWaterQualityData(WaterQualityDataModel(
-                3, 8.4, 34.1, 5.7))
-            val record4 = databaseHandler.addWaterQualityData(WaterQualityDataModel(
-                4, 5.5, 30.7, 6.8))
-            val record5 = databaseHandler.addWaterQualityData(WaterQualityDataModel(
-                5, 9.6, 35.9, 7.9))
+    private fun checkCurrentUser() {
+        // [START check_current_user]
+        val user = Firebase.auth.currentUser
+        if (user != null) {
+            // User is signed in
+        } else {
+            // No user is signed in
         }
+        // [END check_current_user]
+    }
 
+    fun readAndWrite() {
+        val phLevel = binding.phLevelTextView
+        val temperatureLevel = binding.temperatureLevelTextView
+        val depthLevel = binding.depthLevelTextView
+        val fishCount = binding.fishCountTextView
 
-        fun populateLineChart(values: Array<Double>) {
-            val ourLineChartEntries : ArrayList<Entry> = ArrayList()
+        val database =
+            Firebase.database("https://thesis-4530c-default-rtdb.asia-southeast1.firebasedatabase.app/")
+        val myRefPH = database.reference.child("Thesis/WaterQuality/PH")
+        val myRefTemperature = database.reference.child("Thesis/WaterQuality/Temperature")
+        val myRefDepth = database.reference.child("Thesis/WaterQuality/Depth")
+        val myRefFishCount = database.reference.child("Thesis/FishCounter")
 
-            var i = 0
-
-            for (entry in values) {
-                var value = values[i].toFloat()
-
-                ourLineChartEntries.add(Entry(i.toFloat(), value))
-                i++
+        // Read from the database
+        myRefPH.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                // This method is called once with the initial value and again
+                // whenever data at this location is updated.
+                val value = dataSnapshot.getValue<Float>()
+                if (value != null) {
+                    if (value <= 4) {
+                        phLevel.setTextColor(Color.RED)
+                        phLevel.text = value.toString()
+                    }
+                    else {
+                        phLevel.setTextColor(Color.BLACK)
+                        phLevel.text = value.toString()
+                    }
+                }
             }
 
-            val lineDataSet = LineDataSet(ourLineChartEntries, "")
-            lineDataSet.setColors(*ColorTemplate.PASTEL_COLORS)
-            val data = LineData(lineDataSet)
-            binding.ourLineChart.axisLeft.setDrawGridLines(false)
-            val xAxis: XAxis = binding.ourLineChart.xAxis
-            xAxis.setDrawGridLines(false)
-            xAxis.setDrawAxisLine(false)
-            binding.ourLineChart.legend.isEnabled = false
+            override fun onCancelled(error: DatabaseError) {
+                // Failed to read value
+                Log.w(TAG, "Failed to read value.", error.toException())
+            }
+        })
 
-            //remove description label
-            binding.ourLineChart.description.isEnabled = false
-
-            //add animation
-            binding.ourLineChart.animateX(1000, Easing.EaseInSine)
-            binding.ourLineChart.data = data
-            //refresh
-            binding.ourLineChart.invalidate()
-        }
-
-        fun retrieveRecordsAndPopulateCharts() {
-            val databaseHandler : WaterQualityDatabaseHandler = WaterQualityDatabaseHandler(this)
-
-            val waterQuality : List<WaterQualityDataModel> = databaseHandler.retrieveWaterQualityData()
-
-            val waterQualityIdArray = Array<Int>(waterQuality.size) { 0 }
-            val phLevelArray = Array<Double>(waterQuality.size) { 0.0 }
-            val temperatureLevelArray = Array<Double>(waterQuality.size) { 0.0 }
-            val depthLevelArray = Array<Double>(waterQuality.size) { 0.0 }
-
-            var index = 0
-            for (a in waterQuality) {
-                waterQualityIdArray[index] = a.waterQualityId
-                phLevelArray[index] = a.phLevel
-                temperatureLevelArray[index] = a.temperatureLevel
-                depthLevelArray[index] = a.depthLevel
-                index++
+        myRefTemperature.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                // This method is called once with the initial value and again
+                // whenever data at this location is updated.
+                val value = dataSnapshot.getValue<Float>()
+                temperatureLevel.text = value.toString() + "°C"
             }
 
-//            populateLineChart(waterQualityIdArray, phLevelArray, temperatureLevelArray, depthLevelArray)
+            override fun onCancelled(error: DatabaseError) {
+                // Failed to read value
+                Log.w(TAG, "Failed to read value.", error.toException())
+            }
+        })
 
-            populateLineChart(phLevelArray)
-        }
+        myRefDepth.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                // This method is called once with the initial value and again
+                // whenever data at this location is updated.
+                val value = dataSnapshot.getValue<Float>()
+                depthLevel.text = value.toString() + " ft"
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                // Failed to read value
+                Log.w(TAG, "Failed to read value.", error.toException())
+            }
+        })
+
+        myRefFishCount.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                // This method is called once with the initial value and again
+                // whenever data at this location is updated.
+                val value = dataSnapshot.getValue<Int>()
+                fishCount.text = value.toString()
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                // Failed to read value
+                Log.w(TAG, "Failed to read value.", error.toException())
+            }
+        })
+    }
 }
+

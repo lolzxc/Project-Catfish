@@ -24,7 +24,7 @@
         android:fontFamily="@font/inter"
         android:text="Project Catfish"
         android:textColor="#000000"
-        android:textSize="34sp"
+        android:textSize="40sp"
         android:textStyle="bold|italic"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -38,7 +38,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent"
-        android:textSize="24sp"
+        android:textSize="30sp"
         android:textColor="#000000"
         android:text="Magandang Araw,"
         app:layout_constraintEnd_toEndOf="parent"
@@ -52,7 +52,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Tignan ang kalidad ng tubig"
-        android:textSize="14sp"
+        android:textSize="18sp"
         android:textColor="#000000"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -67,7 +67,7 @@
         android:layout_height="wrap_content"
         android:text="at bilang ng hito sa iyong palaisdaan"
         android:textColor="#000000"
-        android:textSize="14sp"
+        android:textSize="18sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.497"
@@ -79,7 +79,7 @@
         android:id="@+id/buttonLogIn"
         android:layout_width="250dp"
         android:layout_height="wrap_content"
-        android:text="Log In"
+        android:text="Get Started"
         android:backgroundTint="#001AFF"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -87,19 +87,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView4"
         app:layout_constraintVertical_bias="0.22" />
-
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/buttonSignUp"
-        android:layout_width="250dp"
-        android:layout_height="wrap_content"
-        android:text="Sign Up"
-        android:backgroundTint="#001AFF"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/buttonLogIn"
-        app:layout_constraintVertical_bias="0.081" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
