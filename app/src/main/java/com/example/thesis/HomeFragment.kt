@@ -77,7 +77,10 @@ class HomeFragment : Fragment() {
         myRefDateUpdatedLoRa.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 val value = dataSnapshot.getValue<String>()
-                dateUpdatedLoRa.text = "Date Updated: $value"
+                if (value != null) {
+                    dateUpdatedLoRa.text = "Date Updated: " + value.split(":").first()+ " " +
+                            value.split(":").takeLast(3).joinToString(":")
+                }
             }
             override fun onCancelled(error: DatabaseError) {
                 Log.w(TAG, "Failed to read value.", error.toException())
@@ -88,7 +91,10 @@ class HomeFragment : Fragment() {
                 // This method is called once with the initial value and again
                 // whenever data at this location is updated.
                 val value = dataSnapshot.getValue<String>()
-                dateUpdatedFishCounter.text = "Date Updated: $value"
+                if (value != null) {
+                    dateUpdatedFishCounter.text = "Date Updated: " + value.split(":").first()+ " " +
+                            value.split(":").takeLast(3).joinToString(":")
+                }
             }
 
             override fun onCancelled(error: DatabaseError) {
@@ -102,7 +108,10 @@ class HomeFragment : Fragment() {
                 // This method is called once with the initial value and again
                 // whenever data at this location is updated.
                 val value = dataSnapshot.getValue<String>()
-                dateUpdatedWaterQuality.text = "Date Updated: $value"
+                if (value != null) {
+                    dateUpdatedWaterQuality.text = "Date Updated: " + value.split(":").first()+ " " +
+                            value.split(":").takeLast(3).joinToString(":")
+                }
             }
 
             override fun onCancelled(error: DatabaseError) {
